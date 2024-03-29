@@ -1,0 +1,86 @@
+# Server-Switch-S1 script
+enable
+conf t
+hostname Server-Switch-1
+interface FastEthernet0/1
+ description Connection-to-Firewall
+ no shutdown
+exit
+interface FastEthernet0/3
+ description DNS-TFTP-Server
+ no shutdown
+exit
+interface FastEthernet0/2
+ description HTTP-NTP-Server
+ no shutdown
+exit
+interface FastEthernet0/4
+ description Syslog-AAA-Server
+ no shutdown
+exit
+
+vlan 10
+ name HTTP-NTP
+vlan 20
+ name DNS-TFTP
+vlan 30
+ name SYSLOG-AAA
+exit
+interface FastEthernet0/2
+ description HTTP-NTP-Server
+ switchport mode access
+ switchport access vlan 10
+ no shutdown
+
+interface FastEthernet0/3
+ description DNS-TFTP-Server
+ switchport mode access
+ switchport access vlan 20
+ no shutdown
+
+interface FastEthernet0/4
+ description Syslog-AAA-Server
+ switchport mode access
+ switchport access vlan 30
+ no shutdown
+
+interface Vlan10
+ ip address 192.168.11.1 255.255.255.0
+ no shutdown
+
+interface Vlan20
+ ip address 192.168.12.1 255.255.255.0
+ no shutdown
+
+interface Vlan30
+ ip address 192.168.13.1 255.255.255.0
+ no shutdown
+
+interface range FastEthernet0/1 - 4
+ switchport mode access
+ switchport port-security
+ switchport port-security maximum 1
+ switchport port-security violation restrict
+ switchport port-security mac-address sticky
+ no shutdown
+exit
+interface range FastEthernet0/1 - 4
+ spanning-tree bpduguard enable
+ip dhcp snooping
+ip dhcp snooping vlan 1-30
+exit
+enable secret password
+service password-encryption
+end
+write memory
+copy running-config startup-config
+
+
+# IP DHCP snooping will act as our firewall between these and prevent unauthorized dhcp servers from assigning them ips
+
+######## HTTP-NTP setup
+# enable http, ntp only
+# did nothing else
+# set ip to 192.168.12.2 255.255.255.0
+# no ip gateway set yet
+

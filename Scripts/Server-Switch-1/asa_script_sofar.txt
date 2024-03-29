@@ -1,0 +1,17 @@
+interface GigabitEthernet1/2
+ nameif DMZ
+ security-level 50
+ ip address 192.168.10.3 255.255.255.0
+ no shutdown
+
+interface GigabitEthernet1/3
+ nameif Servers
+ security-level 70
+ ip address 192.168.9.3 255.255.255.0
+ no shutdown
+
+interface GigabitEthernet1/1
+ nameif Internal
+ security-level 100
+ ip address 10.10.0.1 255.255.0.0
+ no shutdown
